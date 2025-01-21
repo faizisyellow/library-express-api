@@ -37,17 +37,8 @@ const signup = async (req: CreateAuthUserRequest): Promise<SignUpUserRespone> =>
   });
 
   const token = jwtConfig.generateToken(id);
-  const refreshToken = jwtConfig.generateRefreshToken(id);
-
-  await prismaClient.refreshToken.create({
-    data: {
-      token: refreshToken,
-      userId: id,
-    },
-  });
-
   const user = { id, email, username, role };
-  return { user, token, refreshToken };
+  return {user,token};
 };
 
 /**
@@ -74,61 +65,13 @@ const login = async (req: LoginUserRequest): Promise<LoginResponse> => {
 
   const token = jwtConfig.generateToken(user.id);
 
-  const refreshToken = jwtConfig.generateRefreshToken(user.id);
-
-  await prismaClient.refreshToken.deleteMany({
-    where: { userId: user.id },
-  });
-
-  await prismaClient.refreshToken.create({
-    data: {
-      token: refreshToken,
-      userId: user.id,
-    },
-  });
-
   const { password, ...userWithoutPassword } = user;
-  return { userWithoutPassword, token, refreshToken };
+  return { userWithoutPassword, token,  };
 };
 
-/**
- * @RefreshAccessToken service
- */
-export const refreshAccessToken = async (refreshToken: string): Promise<{ token: string }> => {
-  const decoded = jwtConfig.verifyRefreshToken(refreshToken);
 
-  const tokenRecord = await prismaClient.refreshToken.findUnique({
-    where: { token: refreshToken },
-  });
-
-  if (!tokenRecord) {
-    throw new ResponseError(400, "Invalid refresh token");
-  }
-
-  const token = jwtConfig.generateToken(decoded.userId);
-
-  return { token };
-};
-
-/**
- * To delete refresh token when expired
- * @InvalidateRefreshToken service
- */
-const invalidateRefreshToken = async (refreshToken: string): Promise<void> => {
-  try {
-    await prismaClient.refreshToken.delete({
-      where: {
-        token: refreshToken,
-      },
-    });
-  } catch (error) {
-    throw new ResponseError(500, error as string);
-  }
-};
 
 export const authService = {
   signup,
   login,
-  refreshAccessToken,
-  invalidateRefreshToken,
 };

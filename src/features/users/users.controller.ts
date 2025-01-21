@@ -17,18 +17,12 @@ const createUserAdminController = async (req: Request, res: Response, next: Next
       return;
     }
 
-    const { user, token, refreshToken } = await userService.createUserAdmin(request.data);
+    const { user, token, } = await userService.createUserAdmin(request.data);
 
     res.cookie("token", token, {
       httpOnly: true,
       secure: false,
       maxAge: 3600 * 1000,
-    });
-
-    res.cookie("refresh_token", refreshToken, {
-      httpOnly: true,
-      secure: false,
-      maxAge: 30 * 24 * 60 * 60 * 1000,
     });
 
     res.status(200).json({
@@ -72,8 +66,26 @@ const deleteUserController = async (req: Request, res: Response, next: NextFunct
   }
 };
 
+const getMyborrowController = async (req: Request, res: Response, next: NextFunction) => {
+  const id = req.userId!
+  
+  try {
+    const myBorrows = await userService.getMyborrow(id)
+  
+     res.status(200).json({
+      status: "Success",
+      code: 200,
+      data: myBorrows,
+      message: "Get borrowing book succcessful",
+    });
+  } catch (error) {
+    next(error)
+  }
+}
+
 export const userController = {
   deleteUserController,
   createUserAdminController,
   getUsersController,
+  getMyborrowController
 };

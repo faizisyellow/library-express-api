@@ -4,5 +4,4 @@ import { authController } from "./auth.controller";
 export const authRouter = express.Router();
 authRouter.post("/api/v1/auth/signup", authController.signup);
 authRouter.post("/api/v1/auth/login", authController.login);
-authRouter.post("/api/v1/auth/refresh-token", authController.refreshToken);
 authRouter.post("/api/v1/auth/logout", authController.logout);

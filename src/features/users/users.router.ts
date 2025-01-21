@@ -5,8 +5,14 @@ import { authorizationMiddleware } from "../../middleware/authorization";
 
 export const userRouter = express.Router();
 
-userRouter.get("/api/v1/users", authMiddleware.authenticate, authorizationMiddleware.authorize(["ADMIN"]), userController.getUsersController);
+const {authenticate} = authMiddleware
+const { authorize } = authorizationMiddleware
+const {createUserAdminController,deleteUserController,getUsersController,getMyborrowController}=userController
 
-userRouter.post("/api/v1/users/create-admin", authMiddleware.authenticate, authorizationMiddleware.authorize(["ADMIN"]), userController.createUserAdminController);
+userRouter.get("/api/v1/users", authenticate, authorize(["ADMIN"]),getUsersController);
 
-userRouter.delete("/api/v1/users/:id", authMiddleware.authenticate, authorizationMiddleware.authorize(["ADMIN"]), userController.deleteUserController);
+userRouter.post("/api/v1/users/create-admin", authenticate,authorize(["ADMIN"]),createUserAdminController);
+
+userRouter.delete("/api/v1/users/:id", authenticate, authorize(["ADMIN"]),deleteUserController);
+
+userRouter.get("/api/v1/users/my-borrow", authenticate, authorize(["USER"]),getMyborrowController);

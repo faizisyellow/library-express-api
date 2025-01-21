@@ -40,17 +40,9 @@ const createUserAdmin = async (req: CreateUserAdminRequest) => {
   });
 
   const token = jwtConfig.generateToken(id);
-  const refreshToken = jwtConfig.generateRefreshToken(id);
-
-  await prismaClient.refreshToken.create({
-    data: {
-      token: refreshToken,
-      userId: id,
-    },
-  });
 
   const user = { id, email, username, role };
-  return { user, token, refreshToken };
+  return { user, token };
 };
 
 /**
@@ -130,9 +122,43 @@ const deleteUser = async (id: string) => {
   }
 };
 
+
+
+/**
+ * @GET User's Borrow Book
+ */
+const getMyborrow = async (id:string) => {
+  const myborrow = await prismaClient.user.findUnique({
+    where: {
+      id
+    },
+    select: {
+      Borrowing: {
+        select: {
+          id: true,
+          borrowDate: true,
+          returnDate: true,
+          status: true,
+          book: {
+            select: {
+              id: true,
+              title: true,
+              coverImage: true,    
+            }
+          }
+          
+        }
+      }
+    }
+  })
+
+  return myborrow
+}
+
 export const userService = {
   getUsers,
   getUserById,
   deleteUser,
   createUserAdmin,
+  getMyborrow
 };

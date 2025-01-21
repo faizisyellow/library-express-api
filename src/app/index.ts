@@ -9,6 +9,7 @@ import { categoriesRouter } from "../features/categories/categories.router";
 import { booksRouter } from "../features/books/books.router";
 import { userRouter } from "../features/users/users.router";
 import { profilesRouter } from "../features/profiles/profiles.router";
+import { borrowRouter } from "../features/borrow/borrow.router";
 
 declare global {
   namespace Express {
@@ -33,6 +34,7 @@ app.use(categoriesRouter);
 app.use(booksRouter);
 app.use(userRouter);
 app.use(profilesRouter);
+app.use(borrowRouter)
 app.use(errorHandler);
 
 export { app };
