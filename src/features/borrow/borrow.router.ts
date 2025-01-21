@@ -12,7 +12,7 @@ const { authenticate } = authMiddleware;
 const { authorize } = authorizationMiddleware;
 const {CreateBorrowBookByUserController,GetBorrowBookController,ReturnBorrowBookController}=borrowControllers
  
-borrowRouter.get("/api/v1/borrow-book", authenticate, authorize(["ADMIN","USER"]), GetBorrowBookController)
+borrowRouter.get("/api/v1/borrow-book", authenticate, authorize(["ADMIN"]), GetBorrowBookController)
 
 borrowRouter.post("/api/v1/borrow-book", authenticate, authorize(["USER"]), CreateBorrowBookByUserController)
 

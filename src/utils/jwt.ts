@@ -4,7 +4,7 @@ import { ResponseError } from "./error/response.error";
 export const JWT_SECRET = "helloworld";
 
 const generateToken = (userId: string) => {
-  return jwt.sign({ userId }, JWT_SECRET, { expiresIn: "15d" });
+  return jwt.sign({ userId }, JWT_SECRET, { expiresIn: "60d" });
 };
 
 const verifyToken = (token: string) => {

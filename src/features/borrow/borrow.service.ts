@@ -55,7 +55,7 @@ try {
 
 
 const ReturnBook = async (borrowId: string) => {
-    var currentdate = new Date(); 
+    const currentdate = new Date(); 
     try {
         await prismaClient.borrowing.update({
             where: {
@@ -70,6 +70,7 @@ const ReturnBook = async (borrowId: string) => {
         throw new Error(error as string)
     }
 }
+
 
 export const borrowingService = {
     CreateBorrowBook,
