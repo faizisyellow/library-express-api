@@ -80,6 +80,34 @@ const getBookById = async (id: string): Promise<Book> => {
 };
 
 /**
+ * @Get Detail Book Service
+ */
+const getDetailBook = async (id: string) => {
+  const book = await prismaClient.book.findUnique({
+    where: {
+      id,
+    },
+    select: {
+      id: true,
+      title: true,
+      author: true,
+      coverImage: true,
+      category: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+    },
+  });
+
+  if (!book) {
+    throw new ResponseError(404, "Book not found");
+  }
+  return book;
+};
+
+/**
  * @Update Book Service
  */
 const updateBook = async (update: UpdateBookRequest, id: string) => {
@@ -148,4 +176,5 @@ export const booksService = {
   getBookById,
   updateBook,
   deleteBook,
+  getDetailBook,
 };

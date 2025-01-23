@@ -11,6 +11,8 @@ const { authorize } = authorizationMiddleware;
 
 booksRouter.get("/api/v1/books", authenticate, authorize(["ADMIN", "USER"]), booksController.getBookController);
 
+booksRouter.get("/api/v1/books/:id", authenticate, authorize(["ADMIN"]), booksController.getBookByIdController);
+
 booksRouter.post("/api/v1/books", authenticate, authorize(["ADMIN"]), upload.single("coverImage"), booksController.createBookController);
 
 booksRouter.patch("/api/v1/books/:id", authenticate, authorize(["ADMIN"]), upload.single("coverImage"), booksController.updateBookController);

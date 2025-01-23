@@ -22,10 +22,11 @@ const signup = async (req: Request, res: Response, next: NextFunction) => {
 
     const { user, token  } = await authService.signup(request.data);
 
-    res.cookie("token", token, {
+    res.cookie("x-auth", token, {
       httpOnly: true,
       secure: false,
-      maxAge: 3600 * 1000,
+      sameSite: 'none',
+      maxAge: 60 * 24 * 60 * 60 * 1000,
     });
 
     res.status(200).json({
@@ -56,16 +57,17 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
     }
     const { userWithoutPassword: user, token,  } = await authService.login(request.data);
 
-    res.cookie("token", token, {
+    res.cookie("x-auth", token, {
       httpOnly: true,
-      secure: false,
-      maxAge: 3600 * 1000,
+      secure: true,
+      sameSite: 'none',
+      maxAge:60 * 24 * 60 * 60 * 1000,
     });
 
     res.status(200).json({
       status: "Success",
       code: 200,
-      data: user,
+      data:{ user,token},
       message: "Login successful",
     });
   } catch (error) {
@@ -79,7 +81,7 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
  */
 const logout = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    res.clearCookie("token", { httpOnly: true, secure: false });
+    res.clearCookie("x-auth", { httpOnly: true, secure: false });
 
     res.status(204).json({
       status: "Success",

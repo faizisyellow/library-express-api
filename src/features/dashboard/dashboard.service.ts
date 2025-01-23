@@ -8,6 +8,7 @@ const dashboardOverview = async () => {
 
     const bookCount = await book.count();
     const categoryCount = await category.count();
+    const borrowCount = await borrowing.count();
     const userActiveCount = await user.count({
       where: {
         role: "USER",
@@ -25,6 +26,7 @@ const dashboardOverview = async () => {
             id: true,
             title: true,
             coverImage: true,
+            author: true,
           },
         },
       },
@@ -64,6 +66,7 @@ const dashboardOverview = async () => {
       users: userActiveCount,
       recentBorrowsBook: recentBorrowBooks,
       chartCategoryBooksData,
+      borrowBooks: borrowCount,
     };
     return overview;
   } catch (error) {

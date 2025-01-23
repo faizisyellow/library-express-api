@@ -71,6 +71,24 @@ const getBookController = async (req: Request, res: Response, next: NextFunction
 };
 
 /**
+ * @Get Book controller
+ */
+const getBookByIdController = async (req: Request, res: Response, next: NextFunction) => {
+  const { id } = req.params;
+  try {
+    const book = await booksService.getDetailBook(id);
+    res.status(200).json({
+      status: "Success",
+      code: 200,
+      data: book,
+      message: "Get book successful",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
  * @Update Book controller
  */
 const updateBookController = async (req: Request, res: Response, next: NextFunction) => {
@@ -137,4 +155,5 @@ export const booksController = {
   getBookController,
   updateBookController,
   deleteBookController,
+  getBookByIdController,
 };
