@@ -122,15 +122,6 @@ const updateBook = async (update: UpdateBookRequest, id: string) => {
     throw new ResponseError(404, "Book not found");
   }
 
-  const bookTitleAlreadyExist = await book.findUnique({
-    where: {
-      title: update.title,
-    },
-  });
-
-  if (bookTitleAlreadyExist) {
-    throw new ResponseError(400, "This book title already exist, try another one.");
-  }
 
   await book.update({
     where: {
