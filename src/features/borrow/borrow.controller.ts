@@ -63,7 +63,7 @@ const ReturnBorrowBookController = async (req: Request, res: Response, next: Nex
 
   try {
     await borrowingService.ReturnBook(borrowId);
-    res.status(201).json({
+    res.status(200).json({
       status: "Success",
       code: 200,
       message: "Return Book successful",

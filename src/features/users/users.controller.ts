@@ -67,21 +67,22 @@ const deleteUserController = async (req: Request, res: Response, next: NextFunct
 };
 
 const getMyborrowController = async (req: Request, res: Response, next: NextFunction) => {
-  const id = req.userId!
+  const id = req.userId!;
+  const { status } = req.query; // Query parameter to filter status
   
   try {
-    const myBorrows = await userService.getMyborrow(id)
-  
-     res.status(200).json({
+    const myBorrows = await userService.getMyborrow(id, status as string);
+    
+    res.status(200).json({
       status: "Success",
       code: 200,
       data: myBorrows,
-      message: "Get borrowing book succcessful",
+      message: "Get borrowing book successful",
     });
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};
 
 export const userController = {
   deleteUserController,

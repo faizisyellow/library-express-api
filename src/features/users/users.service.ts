@@ -127,13 +127,14 @@ const deleteUser = async (id: string) => {
 /**
  * @GET User's Borrow Book
  */
-const getMyborrow = async (id:string) => {
+const getMyborrow = async (id: string, status?: string) => {
   const myborrow = await prismaClient.user.findUnique({
-    where: {
-      id
-    },
+    where: { id },
     select: {
       Borrowing: {
+        where: {
+          status: status || "borrowed", // Default status is "borrowed"
+        },
         select: {
           id: true,
           borrowDate: true,
@@ -143,17 +144,17 @@ const getMyborrow = async (id:string) => {
             select: {
               id: true,
               title: true,
-              coverImage: true,    
-            }
-          }
-          
-        }
-      }
-    }
-  })
+              coverImage: true,
+            },
+          },
+        },
+      },
+    },
+  });
 
-  return myborrow
-}
+  return myborrow;
+};
+
 
 export const userService = {
   getUsers,
