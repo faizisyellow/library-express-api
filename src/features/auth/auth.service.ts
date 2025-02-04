@@ -36,9 +36,8 @@ const signup = async (req: CreateAuthUserRequest): Promise<SignUpUserRespone> =>
     },
   });
 
-  const token = jwtConfig.generateToken(id);
   const user = { id, email, username, role };
-  return {user,token};
+  return {user};
 };
 
 /**

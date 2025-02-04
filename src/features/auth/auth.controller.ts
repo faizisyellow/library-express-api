@@ -20,14 +20,7 @@ const signup = async (req: Request, res: Response, next: NextFunction) => {
       return;
     }
 
-    const { user, token  } = await authService.signup(request.data);
-
-    res.cookie("x-auth", token, {
-      httpOnly: true,
-      secure: false,
-      sameSite: 'none',
-      maxAge: 60 * 24 * 60 * 60 * 1000,
-    });
+    const { user } = await authService.signup(request.data);
 
     res.status(200).json({
       status: "Success",
