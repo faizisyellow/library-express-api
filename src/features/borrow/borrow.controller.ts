@@ -28,23 +28,7 @@ async function CreateBorrowBookByUserController(req: Request, res: Response, nex
     userId,
   };
   try {
-    const existingBorrowing = await prismaClient.borrowing.findFirst({
-      where: {
-        bookId: bookId,
-        userId: userId,
-        status: "borrowed",
-      },
-    });
 
-    if (existingBorrowing) {
-      res.status(400).json({
-        status: "Failed",
-        code: 400,
-        message: "Error borrowed book",
-        errors: "You have already borrowed this book and it is still on loan.",
-      });
-      return;
-    }
 
     await borrowingService.CreateBorrowBook(payload);
 

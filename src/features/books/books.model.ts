@@ -3,6 +3,7 @@ export type CreateBookRequest = {
   author: string;
   coverImage: string;
   categoryId: string;
+  stock:number;
 };
 
 export interface UpdateBookRequest {
@@ -10,6 +11,7 @@ export interface UpdateBookRequest {
   author?: string;
   coverImage?: string;
   categoryId?: string;
+  stock?:number;
 }
 
 export interface GetBookReponse {
@@ -21,4 +23,5 @@ export interface GetBookReponse {
   title: string;
   author: string;
   coverImage: string;
+  stock:number;
 }

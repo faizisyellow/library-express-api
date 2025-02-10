@@ -38,6 +38,7 @@ const createBook = async (req: CreateBookRequest) => {
       author: req.author,
       coverImage: req.coverImage,
       categoryId: req.categoryId,
+      stock:req.stock
     },
   });
 };
@@ -52,6 +53,7 @@ const getBook = async (): Promise<GetBookReponse[]> => {
       title: true,
       author: true,
       coverImage: true,
+      stock:true,
       category: {
         select: {
           id: true,
