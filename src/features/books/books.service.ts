@@ -94,6 +94,7 @@ const getDetailBook = async (id: string) => {
       title: true,
       author: true,
       coverImage: true,
+      stock:true,
       category: {
         select: {
           id: true,

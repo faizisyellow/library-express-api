@@ -39,7 +39,7 @@ const dashboardOverview = async () => {
       },
     });
 
-    const specificCategories = ["Mental Health", "Romance", "Fantasy"];
+    const specificCategories = ["Science", "Romance", "Fantasy"];
     const chartCategoryBooksData = [];
     let othersCount = 0;
 

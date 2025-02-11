@@ -7,9 +7,15 @@ export interface CreateBook {
 
 const prismaClient = new PrismaClient();
 
+
+function getCurrentDate() {
+  const date = new Date();
+  const offset = date.getTimezoneOffset() * 60000; 
+  return new Date(date.getTime() - offset);
+}
+
 async function CreateBorrowBook(req: CreateBook) {
   try {
-
     return await prismaClient.$transaction(async (tx) => {
       const book = await tx.book.findUnique({
         where: { id: req.bookId }
@@ -45,6 +51,7 @@ async function CreateBorrowBook(req: CreateBook) {
         data: {
           bookId: req.bookId,
           userId: req.userId,
+          borrowDate: getCurrentDate(),
         },
       });
     });
@@ -78,17 +85,20 @@ async function GetBorrowBook() {
       },
     });
 
-    return borrows;
+  
+    return borrows.map(borrow => ({
+      ...borrow,
+      borrowDate: new Date(borrow.borrowDate).toLocaleString(),
+      returnDate: borrow.returnDate ? new Date(borrow.returnDate).toLocaleString() : null,
+    }));
   } catch (error) {
     throw new Error(error as string);
   }
 }
 
 const ReturnBook = async (borrowId: string) => {
-  const currentdate = new Date();
   try {
     return await prismaClient.$transaction(async (tx) => {
-
       const borrow = await tx.borrowing.findUnique({
         where: { id: borrowId },
         include: { book: true }
@@ -108,12 +118,11 @@ const ReturnBook = async (borrowId: string) => {
         data: { stock: { increment: 1 } }
       });
 
-
       return await tx.borrowing.update({
         where: { id: borrowId },
         data: {
           status: "returned",
-          returnDate: currentdate,
+          returnDate: getCurrentDate(),
         },
       });
     });

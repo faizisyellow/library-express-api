@@ -110,7 +110,7 @@ const updateBookController = async (req: Request, res: Response, next: NextFunct
      * - If no image is uploaded, remove the field from the request.
      * - If an image is uploaded, include it in the request.
      */
-    const request: UpdateBookRequest = { ...req.body, ...(coverImage ? { coverImage } : {}) };
+    const request: UpdateBookRequest = { ...req.body,stock:Number(req.body?.stock), ...(coverImage ? { coverImage } : {}) };
 
     const book = await booksService.getBookById(id);
 
