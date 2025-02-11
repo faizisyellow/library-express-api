@@ -16,8 +16,15 @@ const createBookController = async (req: Request, res: Response, next: NextFunct
      *  -Manually validate request from req.file.
      */
     const coverImage = req.file?.originalname;
-    const { title, author, categoryId } = req.body;
-    if (!title || !author || !categoryId || !coverImage) {
+    const { title, author, categoryId,stock } = req.body;
+    let stockConvertNumber;
+    if (typeof stock === "string") {
+     stockConvertNumber = Number(stock)
+    }
+
+    
+
+    if (!title || !author || !categoryId || !coverImage || !stockConvertNumber) {
       res.status(400).json({
         status: "Failed",
         message: "Validation failed on create book invalid error",
@@ -26,6 +33,7 @@ const createBookController = async (req: Request, res: Response, next: NextFunct
           author: author ? undefined : "Author is required",
           categoryId: categoryId ? undefined : "Category ID is required",
           coverImage: coverImage ? undefined : "Cover Image is required",
+          stock: stockConvertNumber ? undefined : "Stock is required",
         },
       });
       return;
@@ -41,7 +49,8 @@ const createBookController = async (req: Request, res: Response, next: NextFunct
       return;
     }
 
-    await booksService.createBook({ ...request.data, coverImage } as CreateBookRequest);
+    // what am i doing here
+    await booksService.createBook({ ...request.data,stock:stockConvertNumber, coverImage } as CreateBookRequest);
 
     res.status(201).json({
       status: "Success",
@@ -101,7 +110,7 @@ const updateBookController = async (req: Request, res: Response, next: NextFunct
      * - If no image is uploaded, remove the field from the request.
      * - If an image is uploaded, include it in the request.
      */
-    const request: UpdateBookRequest = { ...req.body, ...(coverImage ? { coverImage } : {}) };
+    const request: UpdateBookRequest = { ...req.body,stock:Number(req.body?.stock), ...(coverImage ? { coverImage } : {}) };
 
     const book = await booksService.getBookById(id);
 

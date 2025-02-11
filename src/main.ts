@@ -3,6 +3,8 @@ import { app } from "./app";
 
 dotenv.config();
 
-app.listen(5000, () => {
-  console.log(`Server is running at http://localhost:5000`);
+const PORT = 5000
+
+app.listen(PORT, () => {
+  console.log(`Server is running at http://localhost:${PORT}`);
 });

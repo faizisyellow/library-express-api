@@ -55,6 +55,8 @@ model Book {
   coverImage String
   Borrowing  Borrowing[]
 
+  stock Int
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
