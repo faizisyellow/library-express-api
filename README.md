@@ -1,1 +1,1 @@
-Dont forget push the images :)
+## Dont forget to push the images :)
