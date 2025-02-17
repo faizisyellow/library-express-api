@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { ResponseError } from "../../utils/error/response.error";
 
 export interface CreateBook {
   bookId: string;
@@ -7,7 +8,6 @@ export interface CreateBook {
 
 const prismaClient = new PrismaClient();
 
-
 function getCurrentDate() {
   const date = new Date();
   const offset = date.getTimezoneOffset() * 60000; 
@@ -15,18 +15,13 @@ function getCurrentDate() {
 }
 
 async function CreateBorrowBook(req: CreateBook) {
-  try {
     return await prismaClient.$transaction(async (tx) => {
       const book = await tx.book.findUnique({
         where: { id: req.bookId }
       });
 
       if (!book) {
-        throw new Error("Book not found");
-      }
-
-      if (book.stock <= 0) {
-        throw new Error("Book is out of stock");
+        throw new ResponseError(404,"Book not found");
       }
 
       const existingBorrow = await tx.borrowing.findFirst({
@@ -37,8 +32,12 @@ async function CreateBorrowBook(req: CreateBook) {
         }
       });
 
+      if (book.stock <= 0 && !existingBorrow) {
+        throw new ResponseError(400,"Book is out of stock");
+      }
+
       if (existingBorrow) {
-        throw new Error("You already have this book borrowed");
+        throw new ResponseError(400,"You already have this book borrowed");
       }
 
       // Decrease book stock
@@ -55,13 +54,11 @@ async function CreateBorrowBook(req: CreateBook) {
         },
       });
     });
-  } catch (error) {
-    throw new Error(error as string);
-  }
+
 }
 
 async function GetBorrowBook() {
-  try {
+
     const borrows = await prismaClient.borrowing.findMany({
       select: {
         id: true,
@@ -91,13 +88,10 @@ async function GetBorrowBook() {
       borrowDate: new Date(borrow.borrowDate).toLocaleString(),
       returnDate: borrow.returnDate ? new Date(borrow.returnDate).toLocaleString() : null,
     }));
-  } catch (error) {
-    throw new Error(error as string);
-  }
+ 
 }
 
 const ReturnBook = async (borrowId: string) => {
-  try {
     return await prismaClient.$transaction(async (tx) => {
       const borrow = await tx.borrowing.findUnique({
         where: { id: borrowId },
@@ -105,11 +99,11 @@ const ReturnBook = async (borrowId: string) => {
       });
 
       if (!borrow) {
-        throw new Error("Borrow record not found");
+        throw new ResponseError(404,"Borrow record not found");
       }
 
       if (borrow.status === "returned") {
-        throw new Error("Book has already been returned");
+        throw new ResponseError(400,"Book has already been returned");
       }
 
       // Increase book stock
@@ -126,9 +120,7 @@ const ReturnBook = async (borrowId: string) => {
         },
       });
     });
-  } catch (error) {
-    throw new Error(error as string);
-  }
+
 };
 
 export const borrowingService = {
