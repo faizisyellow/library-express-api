@@ -135,6 +135,12 @@ const getMyborrow = async (id: string, status?: string) => {
         where: {
           status: status || "borrowed", // Default status is "borrowed"
         },
+        orderBy:{
+          ...(status === "returned" 
+            ? { returnDate: 'desc' }
+            : { borrowDate: 'desc' }
+          )
+        },
         select: {
           id: true,
           borrowDate: true,
