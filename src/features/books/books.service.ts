@@ -3,6 +3,8 @@ import { CreateBookRequest, GetBookReponse, UpdateBookRequest } from "./books.mo
 import { ResponseError } from "../../utils/error/response.error";
 import path from "path";
 import fs from "fs/promises";
+import ExcelJS from "exceljs";
+
 
 const prismaClient = new PrismaClient();
 
@@ -46,14 +48,25 @@ const createBook = async (req: CreateBookRequest) => {
 /**
  * @Get Books Service
  */
-const getBook = async (): Promise<GetBookReponse[]> => {
-  const books: GetBookReponse[] = await prismaClient.book.findMany({
+interface GetBookParams {
+  searchTitle?: string;
+}
+
+const getBook = async (params?: GetBookParams) => {
+  const books = await prismaClient.book.findMany({
+    where: params?.searchTitle
+    ? {
+        title: {
+          contains: params.searchTitle,
+        },
+      }
+    : undefined,
     select: {
       id: true,
       title: true,
       author: true,
       coverImage: true,
-      stock:true,
+      stock: true,
       category: {
         select: {
           id: true,
@@ -164,6 +177,58 @@ const deleteBook = async (id: string) => {
   }
 };
 
+
+
+/**
+ * @Download Books to Excel Service
+ */
+const downloadBooksToExcel = async () => {
+  const books = await prismaClient.book.findMany({
+    select: {
+      id: true,
+      title: true,
+      author: true,
+      stock: true,
+      category: {
+        select: {
+          name: true,
+        },
+      },
+    },
+  });
+
+  if (!books.length) {
+    throw new ResponseError(400,"No books available to download.");
+  }
+
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet("Books");
+
+  worksheet.columns = [
+    { header: "ID", key: "id", width: 30 },
+    { header: "Title", key: "title", width: 50 },
+    { header: "Author", key: "author", width: 30 },
+    { header: "Stock", key: "stock", width: 15 },
+    { header: "Category", key: "category", width: 25 },
+  ];
+
+  books.forEach((book) => {
+    worksheet.addRow({
+      id: book.id,
+      title: book.title,
+      author: book.author,
+      stock: book.stock,
+      category: book.category.name,
+    });
+  });
+
+  const filePath = path.join(__dirname, "../../../public/reports", "books.xlsx");
+  await fs.mkdir(path.dirname(filePath), { recursive: true });
+  await workbook.xlsx.writeFile(filePath);
+
+  return filePath;
+};
+
 export const booksService = {
   createBook,
   getBook,
@@ -171,4 +236,5 @@ export const booksService = {
   updateBook,
   deleteBook,
   getDetailBook,
+  downloadBooksToExcel,
 };

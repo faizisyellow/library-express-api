@@ -67,7 +67,9 @@ const createBookController = async (req: Request, res: Response, next: NextFunct
  */
 const getBookController = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const books = await booksService.getBook();
+    const {title} = req.query
+
+    const books = await booksService.getBook({searchTitle:title as string});
     res.status(200).json({
       status: "Success",
       code: 200,
@@ -159,10 +161,27 @@ const deleteBookController = async (req: Request, res: Response, next: NextFunct
   }
 };
 
+/**
+ * @Download Book Report controller
+ */
+const downloadBookReportController = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const filePath = await booksService.downloadBooksToExcel();
+    res.download(filePath, "books.xlsx", (err) => {
+      if (err) {
+        return next(err);
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const booksController = {
   createBookController,
   getBookController,
   updateBookController,
   deleteBookController,
   getBookByIdController,
+  downloadBookReportController
 };

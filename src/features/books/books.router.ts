@@ -6,6 +6,9 @@ import { authorizationMiddleware } from "../../middleware/authorization";
 
 export const booksRouter = express.Router();
 
+booksRouter.get("/api/v1/books/report", booksController.downloadBookReportController)
+
+
 const { authenticate } = authMiddleware;
 const { authorize } = authorizationMiddleware;
 
